@@ -117,10 +117,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _cabecalho() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 16, 4, 8),
-      child: Stack(
-        alignment: Alignment.center,
+      padding: const EdgeInsets.fromLTRB(4, 4, 4, 8),
+      child: Column(
         children: [
+          // Barra de ações acima do título, para os ícones não ficarem por cima dele
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Abre o diário de missões do usuário
+              IconButton(
+                tooltip: 'Missões',
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const MissoesScreen()),
+                ),
+                icon: const Icon(Icons.menu_book, color: _ouro),
+              ),
+              // Botão para logout. O AuthGate leva de volta ao Login sozinho
+              IconButton(
+                tooltip: 'Sair',
+                onPressed: _auth.sair,
+                icon: const Icon(Icons.logout, color: _ouro),
+              ),
+            ],
+          ),
           Column(
             children: [
               const Text(
@@ -168,28 +187,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ],
-          ),
-          // Abre o diário de missões do usuário
-          Positioned(
-            left: 0,
-            top: 0,
-            child: IconButton(
-              tooltip: 'Missões',
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const MissoesScreen()),
-              ),
-              icon: const Icon(Icons.menu_book, color: _ouro),
-            ),
-          ),
-          // Botão para logout. O AuthGate leva de volta ao Login sozinho
-          Positioned(
-            right: 0,
-            top: 0,
-            child: IconButton(
-              tooltip: 'Sair',
-              onPressed: _auth.sair,
-              icon: const Icon(Icons.logout, color: _ouro),
-            ),
           ),
         ],
       ),
