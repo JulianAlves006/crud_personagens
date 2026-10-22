@@ -3,17 +3,16 @@ class Personagem {
   String? nome;
   int? vida;
   int? forca;
-  String userId; // Aqui é a conexão do usuário logado com seus personagens
+  // Não há mais userId: o dono é definido pelo caminho usuarios/{uid}/personagens
 
 
-  Personagem({this.id, required this.nome, required this.vida, required this.forca, this.userId = ''}); // this.userId é preenchido pelo Service no create
+  Personagem({this.id, required this.nome, required this.vida, required this.forca});
 
   Map<String, dynamic> toMap(){
     return{
       'nome': nome,
       'vida': vida,
       'forca': forca,
-      'userId': userId, // adiciona aqui também o userId
     };
   }
 
@@ -23,7 +22,6 @@ class Personagem {
       nome: map['nome'] ?? '',
       vida: (map['vida'] ?? 0) as int,
       forca: (map['forca'] ?? 0) as int,
-      userId: map['userId'] ?? '', // e aqui também
     );
 
   }

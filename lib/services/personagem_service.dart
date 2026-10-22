@@ -9,18 +9,17 @@ class PersonagemService{
   // UID do usuário logado
   String get _uid => FirebaseAuth.instance.currentUser!.uid;
 
-  CollectionReference<Map<String, dynamic>> get _colecao => firestore.collection('personagens');
+  // Os personagens pertencem ao usuário pelo caminho: usuarios/{uid}/personagens
+  CollectionReference<Map<String, dynamic>> get _colecao =>
+      firestore.collection('usuarios').doc(_uid).collection('personagens');
 
   Future<void> criarHeroi (Personagem p) async{
-    final dados = p.toMap();
-    dados['userId'] = _uid; // marca invisível do usuário que está criando personagem
-    await _colecao.add(dados);
+    await _colecao.add(p.toMap());
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> listarPersonagens(){
-    //return _colecao.snapshots(); //agora que há login, aqui muda para:
-    // a "peneira". Só irão aparecer os personagens do usuário logado
-    return _colecao.where('userId', isEqualTo: _uid).snapshots();
+    // Sem .where: a subcoleção já contém só os personagens do usuário logado
+    return _colecao.snapshots();
   }
 
   Future<void> tomarDano(String id, int novaVida) async{
