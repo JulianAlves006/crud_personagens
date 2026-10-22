@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../models/personagem.dart';
 import '../services/auth_service.dart';
+import 'missoes_screen.dart';
 
 const _fundo = Color(0xFF14100C);
 const _pergaminho = Color(0xFF241B13);
@@ -101,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _cabecalho() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 4, 8),
+      padding: const EdgeInsets.fromLTRB(4, 16, 4, 8),
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -135,6 +136,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ],
+          ),
+          // Abre o diário de missões do usuário
+          Positioned(
+            left: 0,
+            top: 0,
+            child: IconButton(
+              tooltip: 'Missões',
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const MissoesScreen()),
+              ),
+              icon: const Icon(Icons.menu_book, color: _ouro),
+            ),
           ),
           // Botão para logout. O AuthGate leva de volta ao Login sozinho
           Positioned(
