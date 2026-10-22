@@ -23,7 +23,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   //chamada do serviço de autenticação
   final _auth = AuthService();
-  // Criado uma vez só, para o StreamBuilder não reabrir a escuta a cada rebuild
   late final _perfil = _auth.perfil();
 
   final PersonagemService _service = PersonagemService();
@@ -53,7 +52,6 @@ class _HomeScreenState extends State<HomeScreen> {
       await _service.criarHeroi(heroi);
       _nomeController.clear();
     } on FirebaseException catch (e) {
-      // Ex.: vida negativa é barrada pelas Security Rules (permission-denied)
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Não foi possível invocar: ${e.code}')),
@@ -120,11 +118,9 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.fromLTRB(4, 4, 4, 8),
       child: Column(
         children: [
-          // Barra de ações acima do título, para os ícones não ficarem por cima dele
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Abre o diário de missões do usuário
               IconButton(
                 tooltip: 'Missões',
                 onPressed: () => Navigator.of(context).push(
@@ -152,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   shadows: [Shadow(color: Colors.black, blurRadius: 6)],
                 ),
               ),
-              // Aqui mostra quem está logado, lendo o perfil em usuarios/{uid}
+              // Aqui mostra quem está logado
               StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                 stream: _perfil,
                 builder: (context, snapshot) {

@@ -9,7 +9,6 @@ class PersonagemService{
   // UID do usuário logado
   String get _uid => FirebaseAuth.instance.currentUser!.uid;
 
-  // Os personagens pertencem ao usuário pelo caminho: usuarios/{uid}/personagens
   CollectionReference<Map<String, dynamic>> get _colecao =>
       firestore.collection('usuarios').doc(_uid).collection('personagens');
 
@@ -18,7 +17,6 @@ class PersonagemService{
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> listarPersonagens(){
-    // Sem .where: a subcoleção já contém só os personagens do usuário logado
     return _colecao.snapshots();
   }
 

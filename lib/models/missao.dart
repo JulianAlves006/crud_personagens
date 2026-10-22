@@ -10,7 +10,6 @@ class Missao {
   Map<String, dynamic> toMap(){
     return{
       'titulo': titulo,
-      // Horário do servidor, para não depender do relógio do aparelho
       'concluidaEm': FieldValue.serverTimestamp(),
     };
   }
@@ -19,7 +18,6 @@ class Missao {
     return Missao(
       id: id,
       titulo: map['titulo'] ?? '',
-      // Enquanto o servidor não confirma, o timestamp chega nulo
       concluidaEm: (map['concluidaEm'] as Timestamp?)?.toDate(),
     );
   }

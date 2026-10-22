@@ -8,7 +8,6 @@ class MissaoService{
 
   String get _uid => FirebaseAuth.instance.currentUser!.uid;
 
-  // usuarios/{uid}/missoes
   CollectionReference<Map<String, dynamic>> get _colecao =>
       firestore.collection('usuarios').doc(_uid).collection('missoes');
 
@@ -16,7 +15,6 @@ class MissaoService{
     await _colecao.add(Missao(titulo: titulo).toMap());
   }
 
-  // Mais recentes primeiro
   Stream<QuerySnapshot<Map<String, dynamic>>> listarMissoes(){
     return _colecao.orderBy('concluidaEm', descending: true).snapshots();
   }

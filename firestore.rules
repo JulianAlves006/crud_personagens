@@ -3,16 +3,13 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Logado e acessando o próprio "espaço" (usuarios/{uid})
     function ehDono(uid) {
       return request.auth != null && request.auth.uid == uid;
     }
 
-    // Documento de perfil: usuarios/{uid}
     match /usuarios/{uid} {
       allow read, write: if ehDono(uid);
 
-      // Personagens: além de ser dono, a vida não pode ser negativa (bônus)
       match /personagens/{personagemId} {
         allow read, delete: if ehDono(uid);
         allow create, update: if ehDono(uid)
@@ -20,16 +17,9 @@ service cloud.firestore {
           && request.resource.data.vida >= 0;
       }
 
-      // Qualquer outra subcoleção (missoes, inventario, ...) e tudo abaixo dela.
-      // Subcoleções futuras já ficam protegidas sem editar esta regra.
-      // 'personagens' é excluída aqui para a validação de vida acima não ser
-      // contornada (no Firestore, basta UMA regra permitir para liberar).
       match /{subcolecao}/{documento=**} {
         allow read, write: if ehDono(uid) && subcolecao != 'personagens';
       }
     }
-
-    // Qualquer outro caminho (inclusive a antiga coleção raiz 'personagens')
-    // não tem regra de allow, então é negado por padrão.
   }
 }

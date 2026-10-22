@@ -3,7 +3,6 @@ class Personagem {
   String? nome;
   int? vida;
   int? forca;
-  // Não há mais userId: o dono é definido pelo caminho usuarios/{uid}/personagens
 
 
   Personagem({this.id, required this.nome, required this.vida, required this.forca});

@@ -17,14 +17,12 @@ class AuthService {
 
   Future<void> cadastrar(String email, String senha) async {
     final cred = await _auth.createUserWithEmailAndPassword(email: email, password: senha);
-    // Documento de perfil em usuarios/{uid}, criado junto com a conta
     await _firestore.collection('usuarios').doc(cred.user!.uid).set({
       'email': email,
       'criadoEm': FieldValue.serverTimestamp(),
     });
   }
 
-  // Perfil do usuário logado (usuarios/{uid}), exibido no cabeçalho
   Stream<DocumentSnapshot<Map<String, dynamic>>> perfil() =>
       _firestore.collection('usuarios').doc(_auth.currentUser!.uid).snapshots();
 
