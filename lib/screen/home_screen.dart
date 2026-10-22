@@ -23,6 +23,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   //chamada do serviço de autenticação
   final _auth = AuthService();
+  // Criado uma vez só, para o StreamBuilder não reabrir a escuta a cada rebuild
+  late final _perfil = _auth.perfil();
 
   final PersonagemService _service = PersonagemService();
   final TextEditingController _nomeController = TextEditingController();
@@ -47,8 +49,16 @@ class _HomeScreenState extends State<HomeScreen> {
       forca: int.tryParse(_forcaController.text) ?? 50,
     );
 
-    await _service.criarHeroi(heroi);
-    _nomeController.clear();
+    try {
+      await _service.criarHeroi(heroi);
+      _nomeController.clear();
+    } on FirebaseException catch (e) {
+      // Ex.: vida negativa é barrada pelas Security Rules (permission-denied)
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Não foi possível invocar: ${e.code}')),
+      );
+    }
   }
 
   Future<void> _atacar(Personagem p) async{
@@ -58,6 +68,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _curar(Personagem p) =>
       _service.tomarDano(p.id!, (p.vida! + 20).clamp(0, _vidaMax));
+
+  String _formatarData(DateTime data) {
+    String dois(int n) => n.toString().padLeft(2, '0');
+    return '${dois(data.day)}/${dois(data.month)}/${data.year}';
+  }
 
   // Escolhe o ícone do herói pela "classe" digitada no nome
   IconData _iconeDe(String nome) {
@@ -118,10 +133,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   shadows: [Shadow(color: Colors.black, blurRadius: 6)],
                 ),
               ),
-              // Aqui mostra quem está logado
-              Text(
-                _auth.usuarioAtual?.email ?? '',
-                style: const TextStyle(color: _textoClaro, fontSize: 12),
+              // Aqui mostra quem está logado, lendo o perfil em usuarios/{uid}
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: _perfil,
+                builder: (context, snapshot) {
+                  final dados = snapshot.data?.data();
+                  final email = dados?['email'] ?? _auth.usuarioAtual?.email ?? '';
+                  final criadoEm = (dados?['criadoEm'] as Timestamp?)?.toDate();
+                  return Column(
+                    children: [
+                      Text(
+                        email,
+                        style: const TextStyle(color: _textoClaro, fontSize: 12),
+                      ),
+                      if (criadoEm != null)
+                        Text(
+                          'Aventureiro desde ${_formatarData(criadoEm)}',
+                          style: const TextStyle(color: Color(0xFFB59A6A), fontSize: 11),
+                        ),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 4),
               Container(
